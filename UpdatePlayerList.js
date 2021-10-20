@@ -95,7 +95,6 @@ module.exports = async (playerDataBase) => {
     });
 
     await updateDatabase(playerDataBase);
-    console.log('wtf');
 
 
 
