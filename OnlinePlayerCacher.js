@@ -17,7 +17,29 @@ CREATE TABLE IF NOT EXISTS OnlinePlayers(
   wc TEXT NOT NULL,
   PRIMARY KEY(name)
 );
-`;
+
+CREATE TABLE IF NOT EXISTS PlayerList(
+  name TEXT NOT NULL,
+
+  uuid TEXT, -- maybe null, uuids are hard to cache wihhout reatelimit
+  wc TEXT,
+  level INT,
+  chestsTotal INT,
+  chestsOnWorld INT,
+  chestLoginDiff INT,
+  loginsTotal INT,
+  timeStamp NUMBER,
+  timeOnWorld INT,
+  PRIMARY KEY(name)
+);
+CREATE TABLE IF NOT EXISTS SKIPME(
+    name TEXT NOT NULL,
+    uuid TEXT NOT NULL,
+    level INT,
+    chestsLooted INT,
+    primary key(uuid)
+); -- these users are too low level to be sniped.
+`
 
 ONLINE_PLAYERS = [];
 
@@ -42,8 +64,6 @@ async function cacheOnlines(playerDataBase) {
   // console.log(playerWorldMap);
   return (await axios.get(
     'https://api.wynncraft.com/public_api.php?action=onlinePlayers').then(res => res.data).then(res => filterWorldsWCOnly(res)).then(res => Object.values(res)).then(res => res.flat()).catch(err => console.log(`error: ${err}`)).then(res => ONLINE_PLAYERS = res).then(_ => {
-      console.log(ONLINE_PLAYERS[0]);
-      console.log(ONLINE_PLAYERS);
       loadedOnlines = true; // successes!
 
       playerWorldMap.forEach((worldName, index) => {

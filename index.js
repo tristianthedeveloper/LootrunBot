@@ -7,7 +7,6 @@ let playerDataBase = new sql.Database('./db/playerlist.db', sql.OPEN_READWRITE |
   console.log("connected to the playerlist Database");
 });
 
-(require('./app'))();
 
 (async () => {
   const { equal } = require('assert');

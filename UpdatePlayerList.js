@@ -1,28 +1,6 @@
 const sql = require('sqlite3').verbose();
 const internal = require('stream');
 const requests = require('./requests');
-const createPlayerListQuery = `CREATE TABLE IF NOT EXISTS PlayerList(
-  name TEXT NOT NULL,
-
-  uuid TEXT, -- maybe null, uuids are hard to cache wihhout reatelimit
-  wc TEXT,
-  level INT,
-  chestsTotal INT,
-  chestsOnWorld INT,
-  chestLoginDiff INT,
-  loginsTotal INT,
-  timeStamp NUMBER,
-  timeOnWorld INT,
-  PRIMARY KEY(name)
-);
-CREATE TABLE IF NOT EXISTS SKIPME(
-    name TEXT NOT NULL,
-    uuid TEXT NOT NULL,
-    level INT,
-    chestsLooted INT,
-    primary key(uuid)
-); -- these users are too low level to be sniped.
-`
 
 
 let offset = 0; // next to offset for sniping.
@@ -57,7 +35,7 @@ const updateDatabase = async (playerDataBase) => {
                 const data = await requests.getData(name);
 
                 const { uuid, meta: metadata, classes } = data.data[0];
-                const { firstJoin, lastJoin, location } = metadata;
+                // const { firstJoin, lastJoin, location } = metadata;
                 const highestLevel = Math.max(...classes.map((v) => v.professions.combat.level));
                 const totalChests = classes.reduce(
                     (accum, curr) => {
@@ -88,16 +66,8 @@ const updateDatabase = async (playerDataBase) => {
 module.exports = async (playerDataBase) => {
 
     // create db
-    playerDataBase.serialize(() => {
-        playerDataBase.exec(createPlayerListQuery, (err) => {
-            if (err) console.error(`caught error executing db: ${err}`);
-        });
-    });
-
     await updateDatabase(playerDataBase);
-
-
-
+    return 200;
 }
 
 
